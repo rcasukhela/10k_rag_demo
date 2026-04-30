@@ -6,4 +6,4 @@ dependencies = [
 ]
 
 [tool.setuptools.packages.find]
-where ['10k_rag_demo']
+where = ['src']
