@@ -1,0 +1,9 @@
+[project]
+name = '10k_rag_demo'
+version = '0.1.0'
+dependencies = [
+    'rank-bm25',
+]
+
+[tool.setuptools.packages.find]
+where ['10k_rag_demo']
