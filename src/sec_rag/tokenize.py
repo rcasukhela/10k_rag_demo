@@ -2,7 +2,6 @@ import re
 import spacy
 
 nlp = spacy.blank("en")
-
 COMPOUND_RE = re.compile(
     r'''
     \d+-[A-Za-z]+
