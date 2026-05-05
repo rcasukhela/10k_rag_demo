@@ -1,5 +1,7 @@
 *.pdf
 
+models/
+
 # data/
 raw/
 processed/
@@ -19,6 +21,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+secrets/
 build/
 develop-eggs/
 dist/

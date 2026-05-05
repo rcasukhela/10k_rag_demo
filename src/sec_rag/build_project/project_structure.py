@@ -14,6 +14,8 @@ CHUNKS_PATH = PROCESSED_DIR / "chunks.jsonl"
 BM25_PATH = PICKLE_DIR / "bm25.pkl"
 BM25_META_PATH = META_DIR / "bm25_meta.json"
 
+MODELS_DIR = PROJECT_ROOT / 'models'
+
 # Build-specific dirs
 BUILD_DIR = PROJECT_ROOT / 'src' / 'sec_rag'
 SEC_10KS_PATH = BUILD_DIR / 'config' / 'sec_10ks'
@@ -26,4 +28,5 @@ DIRS = [
     ARTIFACTS_DIR,
     PICKLE_DIR,
     META_DIR,
+    MODELS_DIR,
 ]
