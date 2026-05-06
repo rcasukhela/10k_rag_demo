@@ -15,11 +15,12 @@ def build():
     for path in DIRS:
         path.mkdir(parents=True, exist_ok=True)
 
-    # Save cross-encoder model
-    def load_hf_token(path=Path.cwd()/'secrets'/'secrets.yml'):
-        with open(path, 'r') as f:
-            return yaml.safe_load(f)['HF_token']
-    token = load_hf_token()
+    # # Save cross-encoder model
+    # def load_hf_token(path=Path.cwd()/'secrets'/'secrets.yml'):
+    #     with open(path, 'r') as f:
+    #         return yaml.safe_load(f)['HF_token']
+    # token = load_hf_token()
+    token = None
     snapshot_download(
         repo_id="cross-encoder/ms-marco-MiniLM-L6-v2",
         local_dir=str(MODELS_DIR / 'ms-marco-MiniLM-L6-v2'),

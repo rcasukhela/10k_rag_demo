@@ -18,9 +18,11 @@ MODELS_DIR = PROJECT_ROOT / 'models'
 
 # Build-specific dirs
 BUILD_DIR = PROJECT_ROOT / 'src' / 'sec_rag'
+CONFIG_DIR = BUILD_DIR / 'config'
 SEC_10KS_PATH = BUILD_DIR / 'config' / 'sec_10ks'
 CHUNK_POLICY_PARAMS = BUILD_DIR / 'config' / 'chunk_policy'
 BM25_RETRIEVAL_PARAMS = BUILD_DIR / 'config' / 'bm25_retrieval_policy'
+RERANKER_PARAMS = BUILD_DIR / 'config' / 'reranker_policy'
 
 DIRS = [
     RAW_DIR,

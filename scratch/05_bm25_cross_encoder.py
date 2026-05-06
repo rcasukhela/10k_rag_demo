@@ -15,7 +15,11 @@ from sec_rag.load_chunks import load_chunks
 from sec_rag.build_project.project_structure import (
     ARTIFACTS_DIR,
     CHUNKS_PATH,
-    BM25_RETRIEVAL_PARAMS
+    BM25_RETRIEVAL_PARAMS,
+    MODELS_DIR,
+)
+from sec_rag.build_project.load_policy import (
+    load_policy,
 )
 
 
@@ -23,8 +27,9 @@ from sec_rag.build_project.project_structure import (
 
 
 # %%
-with open(BM25_RETRIEVAL_PARAMS / 'retrieval_policy_v1.yml', 'r') as f:
-    bm25_retrieval_params = yaml.load(f, Loader=yaml.FullLoader)
+# with open(BM25_RETRIEVAL_PARAMS / 'retrieval_policy_v1.yml', 'r') as f:
+#     bm25_retrieval_params = yaml.load(f, Loader=yaml.FullLoader)
+bm25_retrieval_params = load_policy('bm25_retrieval_policy', 'v1')
 top_k = bm25_retrieval_params.get('top_k')
 
 
@@ -83,8 +88,15 @@ def get_top_k_chunks(query, chunks, top_k, bm25, verbose=False):
 
 
 # %%
-reranker = CrossEncoder('cross-encoder/ms-marco-MiniLM-L6-v2')
+with open()
+reranker = CrossEncoder(str(MODELS_DIR))
 
 query = 'in 2022, what was the main risk to the firm?'
 
 bm25_chunks = get_top_k_chunks(query, chunks, top_k, bm25, verbose=False)
+
+
+
+
+
+# %%
