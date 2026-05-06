@@ -1,1 +1,2 @@
 reranker_model: ms-marco-MiniLM-L6-v2
+top_rerank_k: 10

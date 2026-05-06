@@ -87,20 +87,29 @@ def get_top_k_chunks(query, chunks, top_k, bm25, verbose=False):
 
 
 # %%
-reranker_model = load_policy('reranker_policy', 'v1')
+reranker_policy = load_policy('reranker_policy', 'v1')
 
 # %%
-reranker = CrossEncoder(str(MODELS_DIR / reranker_model['reranker_model']))
+reranker = CrossEncoder(str(MODELS_DIR / reranker_policy['reranker_model']))
 
 # %%
-query = 'in 2022, what was the main risk to the firm?'
+query = 'What are the main risks to the firm?'
 
 bm25_chunks = get_top_k_chunks(query, chunks, top_k, bm25, verbose=False)
 
 # %%
-scores = reranker.predict([(query, chunk['text']) for chunk in bm25_chunks])
+scores = reranker.predict([
+    (query, '__'.join(
+        [
+            chunk['chunk_id'].split('_')[1],
+            chunk['text']
+        ])) for chunk in bm25_chunks])
 
 
 
 # %%
-reranked_chunks = [bm25_chunks[index] for index in np.argsort(scores)[::-1][:10]]
+top_rerank_k = reranker_policy['top_rerank_k']
+reranked_chunks = [bm25_chunks[index] for index in np.argsort(scores)[::-1][:top_rerank_k]]
+
+
+# %%
