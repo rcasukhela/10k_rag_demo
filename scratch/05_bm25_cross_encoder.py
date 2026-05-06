@@ -5,6 +5,8 @@ import yaml
 import pickle
 from pathlib import Path
 
+import numpy as np
+
 from rank_bm25 import BM25Okapi
 
 from sentence_transformers import CrossEncoder
@@ -27,8 +29,6 @@ from sec_rag.build_project.load_policy import (
 
 
 # %%
-# with open(BM25_RETRIEVAL_PARAMS / 'retrieval_policy_v1.yml', 'r') as f:
-#     bm25_retrieval_params = yaml.load(f, Loader=yaml.FullLoader)
 bm25_retrieval_params = load_policy('bm25_retrieval_policy', 'v1')
 top_k = bm25_retrieval_params.get('top_k')
 
@@ -69,11 +69,13 @@ def get_top_k_chunks(query, chunks, top_k, bm25, verbose=False):
             print('\n-----')
 
     results = []
-    for rank, (i, score) in enumerate(top, start=1):
-        chunk = chunks[i]
+    for rank, bm25_retrieval_tuple in enumerate(top):
+        chunk = chunks[bm25_retrieval_tuple[0]]
+        list_index = bm25_retrieval_tuple[0]
+        score = bm25_retrieval_tuple[1]
         result = {
             "rank": rank,
-            "list_index": i,
+            "list_index": list_index,
             "score": float(score),
             "chunk_id": chunk.get("chunk_id"),
             "source": chunk.get("source"),
@@ -84,19 +86,21 @@ def get_top_k_chunks(query, chunks, top_k, bm25, verbose=False):
     return results
 
 
-
-
+# %%
+reranker_model = load_policy('reranker_policy', 'v1')
 
 # %%
-with open()
-reranker = CrossEncoder(str(MODELS_DIR))
+reranker = CrossEncoder(str(MODELS_DIR / reranker_model['reranker_model']))
 
+# %%
 query = 'in 2022, what was the main risk to the firm?'
 
 bm25_chunks = get_top_k_chunks(query, chunks, top_k, bm25, verbose=False)
 
-
+# %%
+scores = reranker.predict([(query, chunk['text']) for chunk in bm25_chunks])
 
 
 
 # %%
+reranked_chunks = [bm25_chunks[index] for index in np.argsort(scores)[::-1][:10]]
