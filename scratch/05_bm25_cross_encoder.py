@@ -11,7 +11,7 @@ from rank_bm25 import BM25Okapi
 
 from sentence_transformers import CrossEncoder
 
-from sec_rag.tokenize import tokenize
+from sec_rag.spacy_regex_tokenize import spacy_regex_tokenize
 from sec_rag.load_artifacts import load_chunks
 
 from sec_rag.build_project.project_structure import (
@@ -49,7 +49,7 @@ with open(CHUNKS_PATH, 'r', encoding='utf-8') as f:
 
 # %%
 def get_top_k_chunks(query, chunks, top_k, bm25, verbose=False):
-    scores = bm25.get_scores(tokenize(query))
+    scores = bm25.get_scores(spacy_regex_tokenize(query))
 
     top = sorted(
         enumerate(scores),

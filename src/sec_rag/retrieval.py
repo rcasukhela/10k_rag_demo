@@ -23,12 +23,12 @@ from sec_rag.load_artifacts import (
     load_bm25
 )
 
-from sec_rag.tokenize import (
-    tokenize
+from sec_rag.spacy_regex_tokenize import (
+    spacy_regex_tokenize
 )
 
 def get_top_k_chunks(query, chunks, top_k, bm25, verbose=False):
-    scores = bm25.get_scores(tokenize(query))
+    scores = bm25.get_scores(spacy_regex_tokenize(query))
 
     top = sorted(
         enumerate(scores),
@@ -65,7 +65,8 @@ def get_top_k_chunks(query, chunks, top_k, bm25, verbose=False):
     return results
 
 def retrieval(query):
-    with open(CONFIG_DIR / 'config_version.yml', 'r') as f:
+    # Load policies.
+    with open(CONFIG_DIR / 'config_versions.yml', 'r') as f:
         policy_versions = yaml.safe_load(f)
     
     bm25_retrieval_policy_version = policy_versions['bm25_retrieval_policy_version']
@@ -76,6 +77,7 @@ def retrieval(query):
     reranker_policy = load_policy('reranker_policy', reranker_policy_version)
     top_rerank_k = reranker_policy['top_rerank_k']
 
+    # Load artifacts.
     chunks = load_chunks()
     bm25 = load_bm25()
 
@@ -89,7 +91,13 @@ def retrieval(query):
         for chunk in bm25_chunks
         ])
 
-    reranked_chunks = [bm25_chunks[index] for index in np.argsort(scores)[::-1][:top_rerank_k]]
+    ranked_idx = np.argsort(scores)[::-1][:top_rerank_k]
+
+    reranked_chunks = []
+    for i in ranked_idx:
+        chunk = bm25_chunks[i].copy()
+        chunk["reranker_score"] = float(scores[i])
+        reranked_chunks.append(chunk)
 
     return reranked_chunks
 
@@ -98,4 +106,10 @@ def retrieval(query):
 
 
 if __name__ == '__main__':
-    print(retrieval('what is JPM''s main potential for growth?'))
+    reranked_chunks = retrieval('what is JPM''s main potential for growth?')
+    for reranked_chunk in reranked_chunks:
+        print('chunk_id:', reranked_chunk['chunk_id'])
+        print('bm25 score:', reranked_chunk['score'])
+        print('reranker score:', reranked_chunk['reranker_score'])
+        print('text:', reranked_chunk['text'][:100])
+        print('\n')

@@ -18,7 +18,7 @@ COMPOUND_RE = re.compile(
 # Fourth regex: number 1 or more followed by non-cap group of decimal point followed by 1 or more numbers (optional), then percent sign.
 
 
-def tokenize(text):
+def spacy_regex_tokenize(text):
     doc = nlp(text)
 
     tokens = [
