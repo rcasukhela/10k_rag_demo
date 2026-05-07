@@ -12,7 +12,7 @@ from rank_bm25 import BM25Okapi
 from sentence_transformers import CrossEncoder
 
 from sec_rag.tokenize import tokenize
-from sec_rag.load_chunks import load_chunks
+from sec_rag.load_artifacts import load_chunks
 
 from sec_rag.build_project.project_structure import (
     ARTIFACTS_DIR,
@@ -30,7 +30,7 @@ from sec_rag.build_project.load_policy import (
 
 # %%
 bm25_retrieval_params = load_policy('bm25_retrieval_policy', 'v1')
-top_k = bm25_retrieval_params.get('top_k')
+top_k = bm25_retrieval_params.get('top_bm25_k')
 
 
 
@@ -98,11 +98,9 @@ query = 'What are the main risks to the firm?'
 bm25_chunks = get_top_k_chunks(query, chunks, top_k, bm25, verbose=False)
 
 scores = reranker.predict([
-    (query, '__'.join(
-        [
-            chunk['chunk_id'].split('_')[1],
-            chunk['text']
-        ])) for chunk in bm25_chunks])
+    (query, chunk['text'])
+    for chunk in bm25_chunks
+    ])
 
 top_rerank_k = reranker_policy['top_rerank_k']
 reranked_chunks = [bm25_chunks[index] for index in np.argsort(scores)[::-1][:top_rerank_k]]
