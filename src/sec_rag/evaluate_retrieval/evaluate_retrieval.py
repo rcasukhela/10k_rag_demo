@@ -24,3 +24,6 @@ if __name__ == '__main__':
             if any(item.lower() in rc.text.lower() for item in result['required_terms']):
                 hits += 1
         print(f"any-term precision@{total}: {hits}/{total} = {hits / total:.2%}")
+
+        # Cache reranker, make eval output a bit better, maybe more queries?
+        # Ollama is a whole new chapter.
