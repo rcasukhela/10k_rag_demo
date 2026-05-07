@@ -23,15 +23,20 @@ from sec_rag.load_artifacts import (
     load_bm25
 )
 
+from sec_rag.schemas import (
+    BM25Result,
+    RerankedResult,
+)
+
 from sec_rag.spacy_regex_tokenize import (
     spacy_regex_tokenize
 )
 
 def get_top_k_chunks(query, chunks, top_k, bm25, verbose=False):
-    scores = bm25.get_scores(spacy_regex_tokenize(query))
+    bm25_scores = bm25.get_scores(spacy_regex_tokenize(query))
 
     top = sorted(
-        enumerate(scores),
+        enumerate(bm25_scores),
         key=lambda x: x[1],
         reverse=True,
     )[:top_k]
@@ -41,30 +46,28 @@ def get_top_k_chunks(query, chunks, top_k, bm25, verbose=False):
             chunk = chunks[i]
 
             print("\n---")
-            print("score:", round(float(score), 2))
+            print("bm25 score:", round(float(score), 2))
             print("chunk_id:", chunk.get("chunk_id"))
-            print("source:", chunk.get("source"))
-            print(chunk["text"][:100])
+            print("filename:", chunk.get("filename"))
+            print(chunk.text[:100])
             print('\n-----')
 
     results = []
-    for rank, bm25_retrieval_tuple in enumerate(top):
+    for rank, bm25_retrieval_tuple in enumerate(top, start=1):
         chunk = chunks[bm25_retrieval_tuple[0]]
         list_index = bm25_retrieval_tuple[0]
         score = bm25_retrieval_tuple[1]
-        result = {
-            "rank": rank,
-            "list_index": list_index,
-            "score": float(score),
-            "chunk_id": chunk.get("chunk_id"),
-            "source": chunk.get("source"),
-            "text": chunk["text"],
-        }
+        result = BM25Result(
+            **chunk.model_dump(),
+            bm25_rank = rank,
+            list_index = int(list_index),
+            bm25_score = float(score)
+        )
         results.append(result)
     
     return results
 
-def retrieval(query):
+def retrieve(query):
     # Load policies.
     with open(CONFIG_DIR / 'config_versions.yml', 'r') as f:
         policy_versions = yaml.safe_load(f)
@@ -87,17 +90,21 @@ def retrieval(query):
     # Reranking.
     reranker = CrossEncoder(str(MODELS_DIR / reranker_policy['reranker_model']))
     scores = reranker.predict([
-        (query, chunk['text'])
+        (query, chunk.text)
         for chunk in bm25_chunks
         ])
 
     ranked_idx = np.argsort(scores)[::-1][:top_rerank_k]
 
     reranked_chunks = []
-    for i in ranked_idx:
-        chunk = bm25_chunks[i].copy()
-        chunk["reranker_score"] = float(scores[i])
-        reranked_chunks.append(chunk)
+    for final_rank, i in enumerate(ranked_idx, start=1):
+        bm25_chunk = bm25_chunks[i].copy()
+        reranked_chunk = RerankedResult(
+            **bm25_chunk.model_dump(),
+            final_rank = final_rank,
+            reranker_score = float(scores[i])
+        )
+        reranked_chunks.append(reranked_chunk)
 
     return reranked_chunks
 
@@ -106,10 +113,10 @@ def retrieval(query):
 
 
 if __name__ == '__main__':
-    reranked_chunks = retrieval('what is JPM''s main potential for growth?')
+    reranked_chunks = retrieve("what is JPM's main potential for growth?")
     for reranked_chunk in reranked_chunks:
-        print('chunk_id:', reranked_chunk['chunk_id'])
-        print('bm25 score:', reranked_chunk['score'])
-        print('reranker score:', reranked_chunk['reranker_score'])
-        print('text:', reranked_chunk['text'][:100])
+        print('chunk_id:', reranked_chunk.chunk_id)
+        print('bm25 score:', reranked_chunk.bm25_score)
+        print('reranker score:', reranked_chunk.reranker_score)
+        print('text:', reranked_chunk.text[:100])
         print('\n')

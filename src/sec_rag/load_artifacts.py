@@ -6,9 +6,14 @@ from sec_rag.build_project.project_structure import (
     BM25_PATH
 )
 
+from sec_rag.schemas import (
+    Chunk
+)
+
 def load_chunks():
     with open(CHUNKS_PATH, 'r', encoding='utf-8') as f:
-        chunks = [json.loads(line) for line in f]
+        chunks = [Chunk.model_validate_json(line) for line in f]
+            
     return chunks
 
 def load_bm25():
