@@ -97,7 +97,6 @@ query = 'What are the main risks to the firm?'
 
 bm25_chunks = get_top_k_chunks(query, chunks, top_k, bm25, verbose=False)
 
-# %%
 scores = reranker.predict([
     (query, '__'.join(
         [
@@ -105,11 +104,37 @@ scores = reranker.predict([
             chunk['text']
         ])) for chunk in bm25_chunks])
 
-
-
-# %%
 top_rerank_k = reranker_policy['top_rerank_k']
 reranked_chunks = [bm25_chunks[index] for index in np.argsort(scores)[::-1][:top_rerank_k]]
 
 
+# %%
+query = 'In 2023, how was the firm impacted most by COVID or the pandemic?'
+
+bm25_chunks = get_top_k_chunks(query, chunks, top_k, bm25, verbose=False)
+
+scores = reranker.predict([
+    (query, '__'.join(
+        [
+            chunk['chunk_id'].split('_')[1],
+            chunk['text']
+        ])) for chunk in bm25_chunks])
+
+top_rerank_k = reranker_policy['top_rerank_k']
+reranked_chunks = [bm25_chunks[index] for index in np.argsort(scores)[::-1][:top_rerank_k]]
+
+# %%
+query = 'What was the firm''s strategy in 2024 to stay ahead of its competitors?'
+
+bm25_chunks = get_top_k_chunks(query, chunks, top_k, bm25, verbose=False)
+
+scores = reranker.predict([
+    (query, '__'.join(
+        [
+            chunk['chunk_id'].split('_')[1],
+            chunk['text']
+        ])) for chunk in bm25_chunks])
+
+top_rerank_k = reranker_policy['top_rerank_k']
+reranked_chunks = [bm25_chunks[index] for index in np.argsort(scores)[::-1][:top_rerank_k]]
 # %%
