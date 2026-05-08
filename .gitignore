@@ -1,15 +1,8 @@
 *.pdf
 
+data/
+artifacts/
 models/
-
-# data/
-raw/
-processed/
-tmp/
-
-# artifacts/
-meta/
-pickle/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

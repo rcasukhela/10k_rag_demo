@@ -1,12 +1,11 @@
 FROM python:3.11-slim
 
-WORKDIR /app
+WORKDIR /code
 
-COPY requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+COPY pyproject.toml .
+COPY src ./src
+COPY config ./config
 
-COPY app ./app
-COPY data ./data
-COPY eval ./eval
+RUN pip install --no-cache-dir -e .
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "sec_rag.api:app", "--host", "0.0.0.0", "--port", "8000"]
