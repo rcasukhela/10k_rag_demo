@@ -32,6 +32,16 @@ from sec_rag.spacy_regex_tokenize import (
     spacy_regex_tokenize
 )
 
+def load_reranker():
+    # Load policies.
+    with open(CONFIG_DIR / 'config_versions.yml', 'r') as f:
+        policy_versions = yaml.safe_load(f)
+
+    reranker_policy_version = policy_versions['reranker_policy_version']
+    reranker_policy = load_policy('reranker_policy', reranker_policy_version)
+    
+    return CrossEncoder(str(MODELS_DIR / reranker_policy['reranker_model']))
+
 def get_top_k_chunks(query, chunks, top_k, bm25, verbose=False):
     bm25_scores = bm25.get_scores(spacy_regex_tokenize(query))
 
@@ -67,7 +77,7 @@ def get_top_k_chunks(query, chunks, top_k, bm25, verbose=False):
     
     return results
 
-def retrieve(query):
+def retrieve(query, reranker):
     # Load policies.
     with open(CONFIG_DIR / 'config_versions.yml', 'r') as f:
         policy_versions = yaml.safe_load(f)
@@ -88,7 +98,6 @@ def retrieve(query):
     bm25_chunks = get_top_k_chunks(query, chunks, top_k, bm25, verbose=False)
 
     # Reranking.
-    reranker = CrossEncoder(str(MODELS_DIR / reranker_policy['reranker_model']))
     scores = reranker.predict([
         (query, chunk.text)
         for chunk in bm25_chunks
@@ -113,7 +122,8 @@ def retrieve(query):
 
 
 if __name__ == '__main__':
-    reranked_chunks = retrieve("what is JPM's main potential for growth?")
+    reranker = load_reranker()
+    reranked_chunks = retrieve("what is JPM's main potential for growth?", reranker)
     for reranked_chunk in reranked_chunks:
         print('chunk_id:', reranked_chunk.chunk_id)
         print('bm25 score:', reranked_chunk.bm25_score)
