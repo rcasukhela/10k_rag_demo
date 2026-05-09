@@ -1,0 +1,8 @@
+- tiny retrieval evaluation set / haven't thought through eval metrics properly
+- no explicit year filtering
+- using simple overlapping chunks
+- haven't touched embeddings or RRF for hybrid retrieval yet
+- small LLM good for dev and testing, but may summarize poorly -- require juicier hardware to test larger models
+- query/prompt quality still rough
+- query/prompt families not thought through
+- no startup health checks / smoke tests yet
