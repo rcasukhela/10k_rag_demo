@@ -11,7 +11,7 @@ from rank_bm25 import BM25Okapi
 
 from sentence_transformers import CrossEncoder
 
-from sec_rag.spacy_regex_tokenize import spacy_regex_tokenize
+from sec_rag.build_project.spacy_regex_tokenize import spacy_regex_tokenize
 from sec_rag.load_artifacts import load_chunks
 
 from sec_rag.build_project.project_structure import (

@@ -6,11 +6,10 @@ services:
     volumes:
       - ./data:/code/data
       - ./artifacts:/code/artifacts
-      - ./config:/code/config
       - ./models:/code/models
     environment:
-      - OLLAMA_BASE_URL=http://ollama:11434
-      - OLLAMA_MODEL=gemma3:270m
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL}
+      - OLLAMA_MODEL=${OLLAMA_MODEL}
     command: uvicorn sec_rag.api:app --host 0.0.0.0 --port 8000 --reload
     depends_on:
       - ollama

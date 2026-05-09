@@ -3,6 +3,8 @@
 data/
 artifacts/
 models/
+ollama-data/
+scratch/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

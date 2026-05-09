@@ -28,7 +28,7 @@ from sec_rag.schemas import (
     RerankedResult,
 )
 
-from sec_rag.spacy_regex_tokenize import (
+from sec_rag.build_project.spacy_regex_tokenize import (
     spacy_regex_tokenize
 )
 

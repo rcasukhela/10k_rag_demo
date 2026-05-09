@@ -2,7 +2,15 @@
 name = '10k_rag_demo'
 version = '0.1.0'
 dependencies = [
-    'rank-bm25',
+    "fastapi",
+    "uvicorn",
+    "requests",
+    "rank-bm25",
+    "sentence-transformers",
+    "pydantic",
+    "pyyaml",
+    "numpy",
+    "spacy"
 ]
 
 [tool.setuptools.packages.find]
